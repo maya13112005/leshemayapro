@@ -1,3 +1,43 @@
 <resources>
     <string name="app_name">leshemayapro</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="invalid_password">Password must be according to the password format</string>
+    <string name="example_mail" translatable="false">example@gmail.com</string>
+    <string name="show_password">show password</string>
+    <string name="app_official_name">vegan me</string>
+    <string name="login_prompt">login</string>
+    <string name="continue_with_facebook">continue with facebook</string>
+    <string name="continue_with_google">continue with google</string>
+    <string name="new_account">Don\'t have an account? Create a new one</string>
+    <string name="full_name">Full Name</string>
+    <string name="register">Register</string>
+    <string name="sign_in">Already have an account? Sign in</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="explore">explore</string>
+    <string name="new_post">new post</string>
+    <string name="search">search</string>
+    <string name="profile">profile</string>
+    <string name="todo">todo</string>
+    <string name="placeholder">placeholder</string>
+    <string name="plz_fill" />
+    <string name="login_successful" />
+    <string name="login_failed" />
+    <string name="reg_good" />
+    <string name="reg_fail" />
+    <string name="invalid_email">invalid email</string>
+    <string name="idToken">847543099481-lgruqrlmvtlof0aj86c7mdeho6nue0dg.apps.googleusercontent.com</string>
+    <string name="wrong_password">wrongpassword</string>
+    <string name="clear">clear</string>
+    <string name="email_occupied">email occupied</string>
+    <string name="password_rule">password must:                                  \t\tbe at least 8 characters                                  \t\tbe at most 20 characters                                  \t\tinclude at least one digit[0–9]                                  \t\tinclude at least one lowercase letter[a-z]                                  \t\tinclude at least one uppercase letter[A-Z]                                  \t\tinclude at least one of the special character below:</string>
+    <string name="markiv">מרכיב</string>
+    <string name="password_rules">password rules</string>
+    <string name="sign_out">sign out</string>
+    <string name="confirm_logout">confirm logout</string>
+    <string name="logout_confirm">Are you sure you want to logout?</string>
+    <string name="yes">yes</string>
+    <string name="cancel">cancel</string>
 </resources>

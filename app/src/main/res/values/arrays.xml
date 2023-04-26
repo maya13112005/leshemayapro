@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tags">
+        <item>spicy</item>
+        <item>salty</item>
+        <item>meaty</item>
+        <item>cheesy</item>
+        <item>salad</item>
+        <item>dough</item>
+    </string-array>
+</resources>
