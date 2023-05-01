@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="60dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.ProfileFragment">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/profile_image"
+        android:layout_height="100dp"
+        android:layout_width="100dp"
+        android:src="@drawable/gal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/separator1"
+        app:layout_constraintEnd_toStartOf="@id/sign_out"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/sign_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hapticFeedbackEnabled="true"
+        android:text="@string/sign_out"
+        app:cornerRadius="@dimen/cornerRadius"
+        app:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@id/separator1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/profile_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/separator1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="10dp"
+        android:background="@android:color/background_dark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_image" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/posts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="posts"
+        android:layout_marginVertical="5dp"
+        app:cornerRadius="@dimen/cornerRadius"
+        app:layout_constraintEnd_toStartOf="@id/drafts"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/separator1" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/drafts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="drafts"
+        android:layout_marginVertical="5dp"
+        app:cornerRadius="@dimen/cornerRadius"
+        app:layout_constraintEnd_toStartOf="@id/saves"
+        app:layout_constraintStart_toEndOf="@+id/posts"
+        app:layout_constraintTop_toBottomOf="@+id/separator1" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/saves"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="saves"
+        android:layout_marginVertical="5dp"
+        app:cornerRadius="@dimen/cornerRadius"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/drafts"
+        app:layout_constraintTop_toBottomOf="@+id/separator1" />
+
+    <View
+        android:id="@+id/separator2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="10dp"
+        android:background="@android:color/background_dark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/drafts" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/profile_recipe_list"
+        app:layout_constraintTop_toBottomOf="@+id/separator2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

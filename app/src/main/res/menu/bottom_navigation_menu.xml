@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/explore"
+        android:enabled="true"
+        android:icon="@drawable/ic_home"
+        android:iconTint="?colorPrimary"
+        android:title="@string/explore"/>
+    <item
+        android:id="@+id/new_post"
+        android:enabled="true"
+        android:icon="@drawable/ic_add"
+        android:iconTint="?colorPrimary"
+        android:title="@string/new_post" />
+
+    <!--item
+        android:id="@+id/search"
+        android:enabled="true"
+        android:icon="@drawable/ic_search"
+        android:iconTint="?colorPrimary"
+        android:title="@string/search"/-->
+
+    <item
+        android:id="@+id/profile"
+        android:enabled="true"
+        android:icon="@drawable/ic_full_name"
+        android:iconTint="?colorPrimary"
+        android:title="@string/profile"/>
+</menu>
