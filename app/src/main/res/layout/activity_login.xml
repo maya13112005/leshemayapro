@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.LoginActivity"
     android:backgroundTint="@color/purple_500"
-    android:backgroundTintMode="screen"
+    android:backgroundTintMode="multiply"
     android:background="@drawable/background_leaves_green">
 
     <ScrollView
@@ -139,10 +140,24 @@
                 android:hapticFeedbackEnabled="true"
                 android:text="@string/login_prompt"
                 app:cornerRadius="@dimen/cornerRadius"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guest_login"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/show_password" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/guest_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginTop="8dp"
+                android:enabled="true"
+                android:hapticFeedbackEnabled="true"
+                android:text="login as guest"
+                app:cornerRadius="@dimen/cornerRadius"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/show_password"
+                app:layout_constraintStart_toEndOf="@+id/login_button" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/google_button"
@@ -156,6 +171,7 @@
                 android:backgroundTint="#AD0650BF"
                 android:hapticFeedbackEnabled="true"
                 android:text="@string/continue_with_google"
+                android:visibility="gone"
                 app:cornerRadius="@dimen/cornerRadius"
                 app:icon="@drawable/ic_google"
                 app:iconSize="30dp"
@@ -173,6 +189,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:text="@string/continue_with_facebook"
                 app:cornerRadius="@dimen/cornerRadius"
+                android:visibility="gone"
                 app:icon="@drawable/ic_facebook"
                 app:iconSize="22dp"
                 app:layout_constraintEnd_toEndOf="parent"

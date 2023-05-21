@@ -11,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.leshemayapro.classes.BakingRecipe;
 import com.example.leshemayapro.classes.FirebaseManager;
+import com.example.leshemayapro.classes.PrefManager;
 import com.example.leshemayapro.classes.Recipe;
 import com.example.leshemayapro.databinding.FragmentExploreBinding;
 import com.example.leshemayapro.utilities.adapters.RecipeListAdapter;
@@ -75,11 +77,22 @@ public class ExploreFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentExploreBinding.inflate(inflater, container, false);
+        handleSharedPref();
         binding.swipeRefresh.setOnRefreshListener(this::myUpdateOperation);
+        handleAdapter();
+        return binding.getRoot();
+    }
+
+    private void handleSharedPref()
+    {
+        PrefManager prefManager = new PrefManager(requireContext());
+        prefManager.setPref(PrefManager.KEY_ACTION_INDICATOR, "explore");
+    }
+
+    private void handleAdapter() {
         ArrayList<Recipe> allRecipes = new ArrayList<>();
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         adapter = new RecipeListAdapter(this.requireContext(), allRecipes);
@@ -87,7 +100,6 @@ public class ExploreFragment extends Fragment {
         binding.recipeList.setLayoutManager(llm);
         binding.recipeList.setAdapter(adapter);
         extractRecipeList(allRecipes);
-        return binding.getRoot();
     }
 
     private void extractRecipeList(ArrayList<Recipe> allRecipes) {
@@ -98,8 +110,8 @@ public class ExploreFragment extends Fragment {
             @Override
             public void onDataChange (@NonNull DataSnapshot snapshot)
             {
-                for (DataSnapshot matchSnapshot : snapshot.getChildren())
-                    allRecipes.add(matchSnapshot.getValue(Recipe.class));
+                for (DataSnapshot recipeSnapshot : snapshot.getChildren())
+                    allRecipes.add(recipeSnapshot.getValue(BakingRecipe.class));
                 adapter.notifyDataSetChanged();
             }
 

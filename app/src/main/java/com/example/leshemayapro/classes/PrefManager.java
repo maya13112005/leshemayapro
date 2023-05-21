@@ -27,7 +27,7 @@ import android.content.SharedPreferences;
 public class PrefManager
 {
     public static final String PREF_NAME = "maya_pref",
-            KEY_BACKGROUND = "background", KEY_ITEM_BACKGROUND = "background item", KEY_THEME = "theme",
+            KEY_ACTION_INDICATOR = "action indicator", KEY_ITEM_BACKGROUND = "background item", KEY_THEME = "theme",
             KEY_FRAGMENT = "fragment", KEY_ITEM = "item",
             KEY_LANGUAGE = "language", KEY_LANGUAGE_ITEM = "language code";
     private final SharedPreferences pref;
@@ -94,6 +94,11 @@ public class PrefManager
         this.getEditor().putBoolean(key, value).apply();
     }
 
+    public void setPref (String key, long value)
+    {
+        this.getEditor().putLong(key, value).apply();
+    }
+
     /**
      * Getter for a String preference value
      * @param key the key of the preference
@@ -114,6 +119,11 @@ public class PrefManager
     public int getPrefInt (String key, int defValue)
     {
         return this.getPref().getInt(key, defValue);
+    }
+
+    public long getPrefLong (String key, long defValue)
+    {
+        return this.getPref().getLong(key, defValue);
     }
 
     /**

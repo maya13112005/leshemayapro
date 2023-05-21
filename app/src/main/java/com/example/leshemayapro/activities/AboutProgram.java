@@ -24,53 +24,10 @@ public class AboutProgram extends AppCompatActivity  {
         setContentView(R.layout.activity_aboutprogrammer);
 
     }
-    @Override
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        getMenuInflater().inflate(R.menu.profile_menu, menu);
-        return  true;
-    }
-    @Override
-
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-
-        int id = item.getItemId();
-        if (id == R.id.action_aboutProgrammer)
-        {
-            createAboutProgrammerDialog();
-
-        }
-        else if (id == R.id.action_aboutProgram)
-        {
-            createAboutProgramDialog();
-        }
-        else if (id == R.id.action_exit)
-        {
-            new AlertDialog.Builder(this)
-                    .setTitle("Going back")
-                    .setMessage("are you sure you want to return?")
-                    .setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finishActivity();
-                        }
-                    })
-                    .setNegativeButton("no",null)
-                    .show();
-            return true;
-        }
-        return false;
-    }
-    private void finishActivity() {
-        finishAndRemoveTask();
-        finishAffinity();
-    }
 
     public void createAboutProgrammerDialog()//יצירת דיאלוג התחברות
     {
-        d= new Dialog(this);
+        d = new Dialog(this);
         d.setContentView(R.layout.activity_aboutprogrammer);
         d.setTitle("Login");
         d.setCancelable(true);

@@ -15,7 +15,6 @@ import com.example.leshemayapro.R;
 import com.example.leshemayapro.classes.FirebaseManager;
 import com.example.leshemayapro.classes.TextValidator;
 import com.example.leshemayapro.classes.User;
-import com.example.leshemayapro.databinding.ActivityLoginBinding;
 import com.example.leshemayapro.databinding.ActivityRegisterBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -23,7 +22,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -35,12 +33,14 @@ public class RegisterActivity extends AppCompatActivity {
     private ActivityRegisterBinding binding;
     public static FirebaseAuth firebaseAuth;
     public static String Uid, email, phone, fn, un;
+    private int numberOfIncorrectAttempts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        Objects.requireNonNull(getSupportActionBar()).hide();
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -92,12 +92,16 @@ public class RegisterActivity extends AppCompatActivity {
         if (isTextValidUsingRegex(text, isEmail))
         {
             inputLayout.setError(null);
+            numberOfIncorrectAttempts = 0;
         }
         else
         {
             inputLayout.setError(getString(resourceID));
+            numberOfIncorrectAttempts++;
         }
         binding.userAndPasswordSignup.setEnabled(isEmailValid && isPasswordValid);
+        if(numberOfIncorrectAttempts > 10)
+            binding.helpPassword.setVisibility(View.VISIBLE);
     }
 
     private boolean isTextValidUsingRegex (String text, boolean isEmail)
@@ -147,7 +151,14 @@ public class RegisterActivity extends AppCompatActivity {
         binding.userAndPasswordSignup.setEnabled(false);
         String emailAddress = binding.username.getText().toString().trim();
         String pass = binding.password.getText().toString().trim();
-        createAccount(emailAddress, pass);
+        if (validatePhone())
+            createAccount(emailAddress, pass);
+        else Toast.makeText(this, "not a valid phone number", Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean validatePhone()
+    {
+        return binding.phoneText.getText().toString().length() == 10;
     }
 
     private void createAccount (String email, String password)

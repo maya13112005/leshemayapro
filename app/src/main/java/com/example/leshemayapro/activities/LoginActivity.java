@@ -4,6 +4,7 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.leshemayapro.classes.TextValidator;
+import com.example.leshemayapro.databinding.GuestLoginBinding;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 
@@ -62,13 +64,14 @@ public class LoginActivity extends AppCompatActivity {
     private final String TAG = this.getClass().getSimpleName();
     private boolean isEmailValid = false, isPasswordValid = false;
     private static final int RC_SIGN_IN = 9001;
-
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
     private boolean showOneTapUI = true;
     private ActivityLoginBinding binding;
+    private GuestLoginBinding guestBinding;
     private CallbackManager callbackManager;
     private SignInClient oneTapClient;
     private BeginSignInRequest signInRequest;
+    private int numberOfIncorrectAttempts;
 
     @Override
     public void onStart()
@@ -128,9 +131,35 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(toRegister));
         binding.showPassword.setOnCheckedChangeListener((compoundButton, isChecked) ->
                 changePasswordState(isChecked));
-        binding.loginButton.setOnClickListener(view -> facebookLogin());
-        binding.googleButton.setOnClickListener(view -> googleLogin());
-        binding.userAndPasswordLogin.setOnClickListener(view -> login());
+//        binding.loginButton.setOnClickListener(view -> facebookLogin());
+        binding.googleButton.setOnClickListener(v -> googleLogin());
+        binding.userAndPasswordLogin.setOnClickListener(v -> login());
+        binding.guestLogin.setOnClickListener(this::guestLogin);
+    }
+
+    private void guestLogin(View v)
+    {
+        PrefManager prefManager = new PrefManager(this);
+        guestBinding = GuestLoginBinding.inflate(getLayoutInflater());
+        new MaterialAlertDialogBuilder(v.getContext())
+                .setTitle("Guest login")
+                .setView(guestBinding.getRoot())
+                .setCancelable(true)
+                .setNeutralButton(R.string.cancel, (dialog, which) -> {})
+                .setPositiveButton(R.string.login_prompt, (dialog, which) ->
+                {
+                    String name = guestBinding.fullNameText.getText().toString().trim();
+                    if (name.isEmpty())
+                    {
+                        Snackbar.make(v, "please fill the name field", Snackbar.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        prefManager.setPref("guest", true);
+                        startActivity(new Intent(this, MainActivity.class));
+                    }
+                })
+                .show();
     }
 
     private void showPasswordRules (View view)
@@ -161,10 +190,14 @@ public class LoginActivity extends AppCompatActivity {
         else isPasswordValid = isTextValidUsingRegex(text, false);
         if (isTextValidUsingRegex(text, isEmail)) {
             inputLayout.setError(null);
+            numberOfIncorrectAttempts = 0;
         } else {
             inputLayout.setError(getString(resourceID));
+            numberOfIncorrectAttempts++;
         }
         binding.userAndPasswordLogin.setEnabled(isEmailValid && isPasswordValid);
+        if(numberOfIncorrectAttempts > 10)
+            binding.helpPassword.setVisibility(View.VISIBLE);
     }
 
     private boolean isTextValidUsingRegex(String text, boolean isEmail) {
@@ -211,29 +244,29 @@ public class LoginActivity extends AppCompatActivity {
         // [END sign_in_with_email]
     }
 
-    private void facebookLogin() {
-        FacebookSdk.sdkInitialize(this, () -> {});
-        LoginManager.getInstance()
-                .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
-
-        LoginManager.getInstance()
-                .registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        handleFacebookAccessToken(loginResult.getAccessToken());
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        Log.d(TAG, "facebook:onCancel");
-                    }
-
-                    @Override
-                    public void onError(@NonNull FacebookException exception) {
-                        Log.w(TAG, "facebook:onError", exception);
-                    }
-                });
-    }
+//    private void facebookLogin() {
+//        FacebookSdk.sdkInitialize(this, () -> {});
+//        LoginManager.getInstance()
+//                .logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
+//
+//        LoginManager.getInstance()
+//                .registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//                    @Override
+//                    public void onSuccess(LoginResult loginResult) {
+//                        handleFacebookAccessToken(loginResult.getAccessToken());
+//                    }
+//
+//                    @Override
+//                    public void onCancel() {
+//                        Log.d(TAG, "facebook:onCancel");
+//                    }
+//
+//                    @Override
+//                    public void onError(@NonNull FacebookException exception) {
+//                        Log.w(TAG, "facebook:onError", exception);
+//                    }
+//                });
+//    }
 
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token.getUserId());

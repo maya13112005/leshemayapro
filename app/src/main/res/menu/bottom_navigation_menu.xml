@@ -13,12 +13,12 @@
         android:iconTint="?colorPrimary"
         android:title="@string/new_post" />
 
-    <!--item
+    <item
         android:id="@+id/search"
         android:enabled="true"
         android:icon="@drawable/ic_search"
         android:iconTint="?colorPrimary"
-        android:title="@string/search"/-->
+        android:title="@string/search"/>
 
     <item
         android:id="@+id/profile"

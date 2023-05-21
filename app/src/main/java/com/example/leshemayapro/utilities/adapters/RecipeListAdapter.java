@@ -2,6 +2,8 @@ package com.example.leshemayapro.utilities.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -15,6 +17,7 @@ import com.example.leshemayapro.classes.FirebaseManager;
 import com.example.leshemayapro.classes.Recipe;
 import com.example.leshemayapro.databinding.RecipeCardViewBinding;
 import com.google.android.gms.auth.api.signin.internal.Storage;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.My
         holder.binding.rating.setText(recipe.getRating());
         holder.binding.description.setText(recipe.getDescription());
         holder.binding.heading.setText(recipe.getTitle());
-        holder.binding.makingTime.setText(recipe.getMakingTime());
+        holder.binding.makingTime.setText("making time: " + recipe.getMakingTime());
     }
 
     @NonNull
@@ -50,7 +53,8 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.My
         Recipe recipe = recipes.get(position);
         holder.binding.baseCardView.setOnClickListener(view -> {
             Intent myIntent = new Intent(context, RecipeActivity.class);
-            
+            myIntent.putExtra("id", recipe.getId() + "");
+            myIntent.putExtra("recipe", recipe);
             this.context.startActivity(myIntent);
             // todo: to recipe page animation.
         });

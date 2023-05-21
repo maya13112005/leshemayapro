@@ -7,30 +7,42 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
-import android.view.KeyEvent;
+
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.CheckBox;
-import android.widget.TextView;
+
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.example.leshemayapro.R;
+import com.example.leshemayapro.classes.BakingRecipe;
 import com.example.leshemayapro.classes.BetterActivityResult;
 import com.example.leshemayapro.classes.FirebaseManager;
 import com.example.leshemayapro.classes.Recipe;
-import com.example.leshemayapro.databinding.FragmentExploreBinding;
 import com.example.leshemayapro.databinding.FragmentNewPostBinding;
-import com.example.leshemayapro.databinding.FragmentProfileBinding;
-import com.example.leshemayapro.utilities.adapters.ChipAdapter;
-import com.example.leshemayapro.utilities.adapters.RecipeListAdapter;
+//import com.example.leshemayapro.utilities.adapters.ChipAdapter;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -60,12 +72,15 @@ public class NewPostFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    String title, description, directions, makingTime, numberOfPeople, bakingTime, temp;
+    ArrayList<String> ingredients, tags;
+
     private StorageReference imageReference;
     private boolean isFromCamera;
     private Bitmap matchBitmap;
     private Uri imagePath;
     private FragmentNewPostBinding binding;
-    private ChipAdapter adapter;
+    private int numberOfLines = 0;
 
     public NewPostFragment() {
         // Required empty public constructor
@@ -103,6 +118,7 @@ public class NewPostFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentNewPostBinding.inflate(inflater, container, false);
+        populateChipGroup();
 //        ArrayList<String> allTags = new ArrayList<>();
 //        extractTagList(allTags);
 //        LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -111,58 +127,168 @@ public class NewPostFragment extends Fragment {
 //        binding.chipGroup.setLayoutManager(llm);
 //        binding.chipGroup.setAdapter(adapter);
         setListeners();
-
-//        binding.linearLayout.setOnEditorActionListener((v, actionId, event) -> {
-//
-//            if (actionId == EditorInfo.IME_ACTION_DONE) {
-//
-//                CheckBox c =new CheckBox(NewPostFragment.this);
-//
-//                addView(checkBox)
-//                //CREATIN A EDITTEXT
-//                return true;
-//            }
-//            return false;
-//        });
         return binding.getRoot();
+    }
+
+    private void populateChipGroup()
+    {
+        String[] chipValues = getResources().getStringArray(R.array.tags);
+        for (String tag : chipValues)
+        {
+            Chip chip = new Chip(requireContext());
+            chip.setText(tag);
+            chip.setCheckable(true);
+            binding.chipGroup.addView(chip);
+        }
     }
 
     private void setListeners()
     {
         binding.recipeImage.setOnClickListener(this::choosePhotoFromPhone);
-        binding.postButton.setOnClickListener(v -> postRecipe());
+        binding.postButton.setOnClickListener(v -> postOrDraftRecipe("post"));
+        binding.draftButton.setOnClickListener(v -> postOrDraftRecipe("draft"));
+        binding.requireBaking.setOnClickListener(v -> toggleBakingRecipe());
+        binding.addIngredient.setOnClickListener(v -> addIngredient());
+        binding.chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+
+            List<Integer> ids = group.getCheckedChipIds();
+            for (Integer id : checkedIds){
+                Chip chip = group.findViewById(id);
+                Toast.makeText(requireContext(), chip.getText(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void postRecipe()
+    private void addIngredient()
     {
+//        LinearLayout linearLayoutSubParent = new LinearLayout(requireContext());
+//        linearLayoutSubParent.setOrientation(LinearLayout.VERTICAL);
+//        linearLayoutSubParent.setWeightSum(100f); // you can also add more widget by providing weight
+//
+//        LinearLayout.LayoutParams linearLayoutSubParentParams =
+//                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 100f);
+//        linearLayoutSubParent.setLayoutParams(linearLayoutSubParentParams);
+//        linearLayoutSubParent.setPadding(0, 0, 0, 0);
+
+        // Add TextInputLayout to parent layout first
+//        TextInputLayout textInputLayout = new TextInputLayout(requireContext(), null, com.google.android.material.R.style.Widget_Material3_TextInputLayout_OutlinedBox);
+//        LinearLayout.LayoutParams textInputLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 100f);
+//        textInputLayout.setLayoutParams(textInputLayoutParams);
+//        textInputLayout.setHintTextAppearance(R.style.TextSizeHint);
+//
+//        // Add EditText control to TextInputLayout
+//        final TextInputEditText editText = new TextInputEditText(requireContext());
+//        LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(
+//                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        editTextParams.setMargins(0, 10, 0, 0);
+//        editText.setLayoutParams(editTextParams);
+//
+//        editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_size));
+//        editText.setHint("Enter value");
+//        editText.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+//        editText.setId(++numberOfLines);
+//        editText.setEnabled(true);
+//
+//        textInputLayout.addView(editText, editTextParams);
+//        binding.ingredients.addView(textInputLayout);
+
+        Spinner ingredientSpinner = new Spinner(requireContext());
+        ArrayAdapter<CharSequence> ingredientAdapter = ArrayAdapter.createFromResource(requireContext(), R.array.ingredients, android.R.layout.simple_spinner_item);
+        ingredientAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ingredientSpinner.setAdapter(ingredientAdapter);
+
+        binding.ingredients.addView(ingredientSpinner);
+    }
+
+    private void toggleBakingRecipe()
+    {
+        if (binding.requireBaking.isChecked())
+        {
+            binding.text1.setVisibility(View.VISIBLE);
+            binding.bakingHours.setVisibility(View.VISIBLE);
+            binding.bakingMinutes.setVisibility(View.VISIBLE);
+            binding.textInputLayout5.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            binding.text1.setVisibility(View.GONE);
+            binding.bakingHours.setVisibility(View.GONE);
+            binding.bakingMinutes.setVisibility(View.GONE);
+            binding.textInputLayout5.setVisibility(View.GONE);
+        }
+    }
+
+    private void postOrDraftRecipe(String action)
+    {
+        extractStrings();
         if(validateInput())
         {
             Toast.makeText(requireContext(), "please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-        String title = binding.title.getText().toString().trim(),
-                description = binding.description.getText().toString().trim(),
-                ingredients = binding.ingredients.getText().toString().trim(),
-                directions = binding.directions.getText().toString().trim(),
-                makingTime = binding.makingTime.getText().toString().trim(),
-                numberOfPeople = binding.title.getText().toString().trim();
-        String id = FirebaseManager.getDatabase().getReference().push().getKey();
-        Recipe recipe = new Recipe(id, FirebaseManager.getUid(), title, description, ingredients, directions, makingTime, numberOfPeople);
-        DatabaseReference recipeRef = FirebaseManager.getDataRef("Recipes/" + id);
-        recipeRef.setValue(recipe);
+        String id = FirebaseManager.getDataRef("/").push().getKey();
+        Recipe recipe;
+        if (binding.requireBaking.isChecked())
+            recipe = new BakingRecipe(id, FirebaseManager.getUid(), title, description, ingredients, tags, directions, makingTime, numberOfPeople, bakingTime, temp);
+        else recipe = new Recipe(id, FirebaseManager.getUid(), title, description, ingredients, tags, directions, makingTime, numberOfPeople);
+        String path = "";
+        if (action.equals("post"))
+            path = "Recipes/" + id;
+        else if (action.equals("draft"))
+            path = "users/" + FirebaseManager.getUid() + "/drafts/" + id;
         imageReference = FirebaseManager.getStorageRef("Recipes/" + id);
-        uploadRecipeImage();
-        Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show();
+        if (uploadRecipeImage())
+        {
+            DatabaseReference recipeRef = FirebaseManager.getDataRef(path);
+            recipeRef.setValue(recipe);
+        }
+//        fragmentManager
+//                .beginTransaction()
+//                .replace(R.id.fragment_container, new ExploreFragment())
+//                .commit();
+//        Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show();
     }
 
     private boolean validateInput()
     {
-        return (binding.title.getText().toString().isEmpty() ||
-                binding.description.getText().toString().isEmpty() ||
-                binding.ingredients.getText().toString().isEmpty() ||
-                binding.directions.getText().toString().isEmpty()||
-                binding.makingTime.getText().toString().isEmpty() ||
-                binding.title.getText().toString().isEmpty());
+        if (!binding.requireBaking.isChecked())
+            return (title.isEmpty() || description.isEmpty() || ingredients.isEmpty() ||
+                    directions.isEmpty() || numberOfPeople.isEmpty() || tags.isEmpty() ||
+                    binding.hours.getSelectedItem().toString().equals("hours") ||
+                    binding.minutes.getSelectedItem().toString().equals("minutes"));
+        else return title.isEmpty() || description.isEmpty() || ingredients.isEmpty() ||
+                directions.isEmpty() || numberOfPeople.isEmpty() || temp.isEmpty() ||
+                binding.hours.getSelectedItem().toString().equals("hours") ||
+                binding.minutes.getSelectedItem().toString().equals("minutes") ||
+                binding.bakingHours.getSelectedItem().toString().equals("hours") ||
+                binding.bakingMinutes.getSelectedItem().toString().equals("minutes");
+    }
+
+    private void extractStrings()
+    {
+        title = binding.title.getText().toString().trim();
+        description = binding.description.getText().toString().trim();
+//        ingredients = binding.ingredients.getText().toString().trim();
+        ingredients = new ArrayList<>();
+        for (int i = 0; i < binding.ingredients.getChildCount(); i++)
+        {
+//            TextInputLayout til = (TextInputLayout) binding.ingredients.getChildAt(i);
+//            ingredients.add(til.getEditText().getText().toString().trim());
+            Spinner spinner = (Spinner) binding.ingredients.getChildAt(i);
+            ingredients.add(spinner.getSelectedItem().toString().trim());
+        }
+        tags = new ArrayList<>();
+        for (Integer id : binding.chipGroup.getCheckedChipIds())
+        {
+            Chip chip = binding.chipGroup.findViewById(id);
+            tags.add(chip.getText().toString());
+        }
+        Log.d(TAG, "extractStrings: ingredients: " + ingredients);
+        directions = binding.directions.getText().toString().trim();
+        makingTime = binding.hours.getSelectedItem().toString() + ":" + binding.minutes.getSelectedItem().toString();
+        bakingTime = binding.bakingHours.getSelectedItem().toString() + ":" + binding.bakingMinutes.getSelectedItem().toString();
+        numberOfPeople = binding.numberOfPeople.getText().toString().trim();
+        temp = binding.temp.getText().toString().trim();
     }
 
     private void choosePhotoFromPhone (View view)
@@ -209,7 +335,7 @@ public class NewPostFragment extends Fragment {
         binding.recipeImage.setImageBitmap(matchBitmap);
     }
 
-    private void uploadRecipeImage ()
+    private boolean uploadRecipeImage ()
     {
         UploadTask uploadTask = null;
         if (isFromCamera)
@@ -228,14 +354,15 @@ public class NewPostFragment extends Fragment {
                     .addOnFailureListener(e -> Toast.makeText(requireContext(), "Image upload NOT successfully", Toast.LENGTH_SHORT).show())
                     .addOnSuccessListener(taskSnapshot -> Toast.makeText(requireContext(), "Image upload successfully", Toast.LENGTH_SHORT).show());
         else
+        {
             Toast.makeText(requireContext(), "Please upload a photo!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
-    private void extractTagList(ArrayList<String> allTags) {
+    private void extractTagList(ArrayList<String> allTags)
+    {
         allTags.addAll(Arrays.asList(getResources().getStringArray(R.array.tags)));
-
-
     }
-
-
 }

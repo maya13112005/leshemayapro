@@ -18,10 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.leshemayapro.R;
 import com.example.leshemayapro.activities.LoginActivity;
+import com.example.leshemayapro.classes.BakingRecipe;
 import com.example.leshemayapro.classes.BetterActivityResult;
 import com.example.leshemayapro.classes.FirebaseManager;
+import com.example.leshemayapro.classes.PrefManager;
 import com.example.leshemayapro.classes.Recipe;
 import com.example.leshemayapro.databinding.FragmentExploreBinding;
 import com.example.leshemayapro.databinding.FragmentProfileBinding;
@@ -62,6 +65,9 @@ public class ProfileFragment extends Fragment {
     private boolean isFromCamera;
     private Bitmap matchBitmap;
     private Uri imagePath;
+    private PrefManager prefManager;
+
+    private ArrayList<Recipe> allRecipes = new ArrayList<>();
 
     private FragmentProfileBinding binding;
     private RecipeListAdapter adapter;
@@ -102,21 +108,38 @@ public class ProfileFragment extends Fragment {
     {
         // Inflate the layout for this fragment
         binding = FragmentProfileBinding.inflate(inflater, container, false);
-        ArrayList<Recipe> allRecipes = new ArrayList<>();
+        prefManager = new PrefManager(requireContext());
+        handleRecipeList();
+        imageReference = FirebaseManager.getStorageRef("profile_images/" + FirebaseManager.getUid());
+        initViews();
+        setListeners();
+        return binding.getRoot();
+    }
+
+    private void initViews()
+    {
+        imageReference.getDownloadUrl().addOnSuccessListener(uri ->
+                Glide
+                        .with(this)
+                        .load(uri)
+                        .centerCrop()
+                        .placeholder(R.drawable.ic_launcher_foreground)
+                        .into(binding.profileImage));
+    }
+
+    private void handleRecipeList() {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         adapter = new RecipeListAdapter(this.requireContext(), allRecipes);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         binding.profileRecipeList.setLayoutManager(llm);
         binding.profileRecipeList.setAdapter(adapter);
-        extractMyRecipeList(allRecipes);
-        setListeners();
-        return binding.getRoot();
+        extractMyRecipeList();
     }
 
     private void setListeners()
     {
         binding.profileImage.setOnClickListener(this::choosePhotoFromPhone);
-        binding.posts.setOnClickListener(v -> fetchAllPosts());
+        binding.posts.setOnClickListener(v -> extractMyRecipeList());
         binding.saves.setOnClickListener(v -> fetchAllSaves());
         binding.drafts.setOnClickListener(v -> fetchAllDrafts());
         binding.signOut.setOnClickListener(this::logoutVerify);
@@ -124,21 +147,49 @@ public class ProfileFragment extends Fragment {
 
     private void fetchAllDrafts()
     {
+        prefManager.setPref(PrefManager.KEY_ACTION_INDICATOR, "draft");
+        allRecipes.clear();
+        DatabaseReference databaseReference = FirebaseManager.getDataRef("users/" + FirebaseManager.getUid() + "/drafts");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange (@NonNull DataSnapshot snapshot)
+            {
+                for (DataSnapshot matchSnapshot : snapshot.getChildren())
+                    if(matchSnapshot.getValue(Recipe.class).getUid().equals(FirebaseManager.getUid()))
+                        allRecipes.add(matchSnapshot.getValue(BakingRecipe.class));
+                adapter.notifyDataSetChanged();
+            }
 
+            @Override
+            public void onCancelled (@NonNull DatabaseError error) {}
+        });
     }
 
     private void fetchAllSaves()
     {
+        prefManager.setPref(PrefManager.KEY_ACTION_INDICATOR, "saved");
+        allRecipes.clear();
+        DatabaseReference databaseReference = FirebaseManager.getDataRef("users/" + FirebaseManager.getUid() + "/saved");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange (@NonNull DataSnapshot snapshot)
+            {
+                for (DataSnapshot matchSnapshot : snapshot.getChildren())
+                    allRecipes.add(matchSnapshot.getValue(BakingRecipe.class));
+                adapter.notifyDataSetChanged();
+            }
 
+            @Override
+            public void onCancelled (@NonNull DatabaseError error) {}
+        });
     }
 
-    private void fetchAllPosts()
-    {
-
-    }
-
-    private void extractMyRecipeList(ArrayList<Recipe> allRecipes) {
+    private void extractMyRecipeList() {
         // todo: link with firebase.
+        prefManager.setPref(PrefManager.KEY_ACTION_INDICATOR, "profile");
+        allRecipes.clear();
         DatabaseReference databaseReference = FirebaseManager.getDataRef("Recipes/");
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -147,7 +198,7 @@ public class ProfileFragment extends Fragment {
             {
                 for (DataSnapshot matchSnapshot : snapshot.getChildren())
                     if(matchSnapshot.getValue(Recipe.class).getUid().equals(FirebaseManager.getUid()))
-                        allRecipes.add(matchSnapshot.getValue(Recipe.class));
+                        allRecipes.add(matchSnapshot.getValue(BakingRecipe.class));
                 adapter.notifyDataSetChanged();
             }
 
